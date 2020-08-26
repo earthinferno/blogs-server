@@ -5,6 +5,7 @@ const BlogService = require('./blogs-service');
 const blogService = new BlogService();
 
 const blogValidatorService = require('./blog-validator-service');
+const logger = require('./logger');
 
 const app = express();
 
@@ -16,11 +17,13 @@ app.get('/', (req, res) => {
   res.send('Please provide some documentation');
 });
 
-app.get('/api/blogs', (req, res) => {
+app.get('get /api/blogs', (req, res) => {
+  logger.log(`/api/blogs`, __filename);
   res.send(JSON.stringify(blogService.GetBlogs()));
 });
 
-app.get('/api/blogs/:id', (req, res) => {
+app.get('get /api/blogs/:id', (req, res) => {
+  logger.log(`/api/blogs/${req.params.id}`, __filename);
   const blog = blogService.GetBlog(parseInt(req.params.id));
   if (!blog)
     res
@@ -31,6 +34,7 @@ app.get('/api/blogs/:id', (req, res) => {
 });
 
 app.post('/api/blogs', (req, res) => {
+  logger.log(`post /api/blogs`, __filename, 'start', req.body);
   const { error } = blogValidatorService.ValidateBlog(req.body);
   if (error) return SendError(error, res);
 
@@ -40,6 +44,7 @@ app.post('/api/blogs', (req, res) => {
 });
 
 app.put('/api/blogs/:id', (req, res) => {
+  logger.log(`put /api/blogs/${req.params.id}`, __filename, 'start', req.body);
   const { error } = blogValidatorService.ValidateBlog(req.body);
   if (error) return SendError(error, res);
 
@@ -57,6 +62,7 @@ app.put('/api/blogs/:id', (req, res) => {
 });
 
 app.delete('/api/blogs/:id', (req, res) => {
+  logger.log(`delete /api/blogs/${req.params.id}`, __filename, 'start');
   const blog = blogService.GetBlog(parseInt(req.params.id));
   if (!blog)
     return res
@@ -80,6 +86,12 @@ function SendError(error, res) {
         error.details[0].message
       )
     );
+}
+
+if (app.get('env') === 'development') {
+  logger.on('messageLogged', (arg) => {
+    console.log(arg);
+  });
 }
 
 app.listen(port, () => console.log(`listening on http://localhost:${port}`));

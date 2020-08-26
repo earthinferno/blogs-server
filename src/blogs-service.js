@@ -1,4 +1,4 @@
-const blogs = require('../mocks/blog-data');
+let blogs = require('../mocks/blog-data');
 
 const BlogService = class {
   GetBlogs() {
@@ -18,6 +18,25 @@ const BlogService = class {
     blogs.push(blogEntry);
 
     return blogEntry;
+  }
+
+  UpdateBlog(id, blog) {
+    const idx = blogs.findIndex((blog) => blog.id === id);
+    if (!idx) return;
+
+    const updatedBlogEntry = {
+      id: id,
+      ...blog,
+    };
+
+    const updatedBlogs = [
+      ...blogs.slice(0, idx),
+      updatedBlogEntry,
+      ...blogs.slice(idx + 1),
+    ];
+
+    blogs = updatedBlogs;
+    return updatedBlogEntry;
   }
 };
 

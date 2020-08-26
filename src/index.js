@@ -36,8 +36,23 @@ app.post('/api/blogs', (req, res) => {
 
   const blog = blogService.AddBlog(req.body);
 
-  console.log(blog);
   res.send(blog);
+});
+
+app.put('/api/blogs/:id', (req, res) => {
+  const { error } = blogValidatorService.ValidateBlog(req.body);
+  if (error) return SendError(error, res);
+
+  const blog = blogService.GetBlog(parseInt(req.params.id));
+  if (!blog)
+    return res
+      .status(404)
+      .send(`No blog was found for the given id: ${req.params.id}`);
+
+  const updatedBlog = blogService.UpdateBlog(parseInt(req.params.id), req.body);
+  if (!updatedBlog) return res.status(500).send('Failed to update blog.');
+
+  res.send(updatedBlog);
 });
 
 function SendError(error, res) {

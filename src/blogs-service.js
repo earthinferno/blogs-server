@@ -38,6 +38,14 @@ const BlogService = class {
     blogs = updatedBlogs;
     return updatedBlogEntry;
   }
+
+  DeleteBlog(id) {
+    const idx = blogs.findIndex((blog) => blog.id === id);
+    if (!idx) return;
+
+    const blogEntry = blogs.splice(idx, 1);
+    return blogEntry;
+  }
 };
 
 module.exports = BlogService;

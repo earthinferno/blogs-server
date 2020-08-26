@@ -50,9 +50,24 @@ app.put('/api/blogs/:id', (req, res) => {
       .send(`No blog was found for the given id: ${req.params.id}`);
 
   const updatedBlog = blogService.UpdateBlog(parseInt(req.params.id), req.body);
-  if (!updatedBlog) return res.status(500).send('Failed to update blog.');
+  if (!updatedBlog)
+    return res.status(500).send(`Failed to update blog ${req.params.id}`);
 
   res.send(updatedBlog);
+});
+
+app.delete('/api/blogs/:id', (req, res) => {
+  const blog = blogService.GetBlog(parseInt(req.params.id));
+  if (!blog)
+    return res
+      .status(404)
+      .send(`No blog was found for the given id: ${req.params.id}`);
+
+  const deletedBlog = blogService.DeleteBlog(parseInt(req.params.id));
+  if (!deletedBlog)
+    return res.status(500).send(`Failed to delete blog ${req.params.id} `);
+
+  res.send(deletedBlog);
 });
 
 function SendError(error, res) {
